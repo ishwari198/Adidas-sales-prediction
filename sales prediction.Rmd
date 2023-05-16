@@ -1,0 +1,90 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+
+
+```{r}
+library(data.table) # used for reading and manipulation of data 
+library(dplyr)      # used for data manipulation and joining 
+library(ggplot2)    # used for ploting 
+library(tidyverse)
+library(plotly)
+library(MLmetrics)
+```
+
+
+```{r}
+#creating training data set by selecting the output row values
+
+data <-  read.csv("C:/Users/ishwa/Downloads/adiads_clean_data.csv")
+data
+```
+
+
+```{r}
+#for reproducibility
+#otherwise different parts of the data will be assigned to training/testing set every time we run the code
+set.seed(11) 
+
+#These are the indices of df that you will use as training and testing sets
+
+#train set, which we set as 70% of the total dataset
+train <- sample(1:nrow(data), 0.7*nrow(data))  
+
+test <- (-train)
+
+```
+
+
+
+
+
+```{r}
+Model_1<-lm(new_total_sales~  Units.Sold, data = data ,subset = train)
+summary(Model_1)
+```
+
+```{r}
+Model_2<-lm(new_total_sales~  Units.Sold+Region, data = data ,subset = train)
+summary(Model_2)
+```
+
+```{r}
+Model_3<-lm(new_total_sales~  Units.Sold+Region+new_unit_price, data = data ,subset = train)
+summary(Model_3)
+```
+```{r}
+Model_4<-lm(new_total_sales~  Units.Sold+Region+new_unit_price+Sales.Method, data = data ,subset = train)
+summary(Model_4)
+```
+
+
+```{r}
+Model_5<-lm(new_total_sales~ Units.Sold + Region + Product + Sales.Method + new_unit_price, data = data ,subset = train)
+summary(Model_5)
+```
+
+```{r}
+predicted <- predict(Model_5, data.frame(Region = "South", Units.Sold = 100, Product ="Men's Athletic Footwear", new_unit_price = 100, Sales.Method ="Outlet"))
+
+print(paste0("Predicted Sales Volume = ",round(predicted,2)," Thousand Units", sep=""))
+```
+
+
+```{r}
+rmse_train <- RMSE(predict(Model_5, data)[train], data$new_total_sales[train])
+rmse_train
+```
+
+```{r}
+rmse_test <- RMSE(predict(Model_7, data)[-train], data$new_total_sales[-train])
+rmse_test
+```
+
+
+
+
+
+
